@@ -1,0 +1,86 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Events - Community Platform</title>
+    <link rel="stylesheet" href="styles.css">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+</head>
+<body>
+    <nav class="navbar">
+        <div class="nav-container">
+            <div class="nav-logo">
+                <a href="index.html">Community Platform</a>
+            </div>
+            <ul class="nav-menu">
+                <li class="nav-item">
+                    <a href="index.html" class="nav-link">Home</a>
+                </li>
+                <li class="nav-item">
+                    <a href="events.html" class="nav-link">Events</a>
+                </li>
+                <li class="nav-item">
+                    <a href="resources.html" class="nav-link">Resources</a>
+                </li>
+                <li class="nav-item">
+                    <a href="about.html" class="nav-link">About</a>
+                </li>
+                <li class="nav-item">
+                    <a href="contact.html" class="nav-link">Contact</a>
+                </li>
+                <li class="nav-item">
+                    <a href="terms.html" class="nav-link">Terms</a>
+                </li>
+            </ul>
+            <div class="nav-toggle" id="mobile-menu">
+                <span class="bar"></span>
+                <span class="bar"></span>
+                <span class="bar"></span>
+            </div>
+        </div>
+    </nav>
+
+    <main class="main-content">
+        <section class="events-header">
+            <div class="container">
+                <h1>Upcoming Events</h1>
+                <p>Join us in making a difference in our community</p>
+            </div>
+        </section>
+
+        <section class="filter-section">
+            <div class="container">
+                <div class="filter-buttons">
+                    <button class="filter-btn active" data-filter="all">All Events</button>
+                    <button class="filter-btn" data-filter="awareness">Awareness</button>
+                    <button class="filter-btn" data-filter="clean-up">Clean-up</button>
+                    <button class="filter-btn" data-filter="education">Education</button>
+                    <button class="filter-btn" data-filter="fundraiser">Fundraiser</button>
+                    <button class="filter-btn" data-filter="community">Community</button>
+                </div>
+            </div>
+        </section>
+
+        <section class="events-section">
+            <div class="container">
+                <div class="events-grid" id="eventsGrid">
+                    <!-- Events will be dynamically loaded here -->
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <footer class="footer">
+        <div class="container">
+            <p>&copy; 2025 Community Platform. All rights reserved.</p>
+            <div class="footer-links">
+                <a href="terms.html">Terms of Service</a>
+                <a href="contact.html">Contact Us</a>
+            </div>
+        </div>
+    </footer>
+
+    <script src="script.js"></script>
+</body>
+</html>

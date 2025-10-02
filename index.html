@@ -1,0 +1,132 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Community Platform</title>
+    <link rel="stylesheet" href="styles.css">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+</head>
+<body>
+    <nav class="navbar">
+        <div class="nav-container">
+            <div class="nav-logo">
+                <a href="index.html">Community Platform</a>
+            </div>
+            <ul class="nav-menu">
+                <li class="nav-item">
+                    <a href="index.html" class="nav-link">Home</a>
+                </li>
+                <li class="nav-item">
+                    <a href="events.html" class="nav-link">Events</a>
+                </li>
+                <li class="nav-item">
+                    <a href="resources.html" class="nav-link">Resources</a>
+                </li>
+                <li class="nav-item">
+                    <a href="about.html" class="nav-link">About</a>
+                </li>
+                <li class="nav-item">
+                    <a href="contact.html" class="nav-link">Contact</a>
+                </li>
+                <li class="nav-item">
+                    <a href="terms.html" class="nav-link">Terms</a>
+                </li>
+            </ul>
+            <div class="nav-toggle" id="mobile-menu">
+                <span class="bar"></span>
+                <span class="bar"></span>
+                <span class="bar"></span>
+            </div>
+        </div>
+    </nav>
+
+    <main class="main-content">
+        <section class="hero">
+            <div class="hero-content">
+                <h1>Welcome to Our Community Platform</h1>
+                <p>Connect, share, and participate in community events and discussions.</p>
+                <button class="btn btn-primary" id="newPostBtn">
+                    <i class="fas fa-plus"></i> New Post
+                </button>
+            </div>
+        </section>
+
+        <section class="posts-section">
+            <div class="container">
+                <h2>Recent Posts</h2>
+                <div class="posts-grid" id="postsGrid">
+                    <!-- Posts will be dynamically loaded here -->
+                    <div class="post-card">
+                        <div class="post-header">
+                            <h3>Welcome to the Community</h3>
+                            <span class="post-date">October 1, 2025</span>
+                        </div>
+                        <div class="post-content">
+                            <p>This is a sample post to demonstrate the layout. Click "New Post" to create your own!</p>
+                        </div>
+                        <div class="post-actions">
+                            <button class="btn btn-secondary btn-sm">
+                                <i class="fas fa-heart"></i> Like
+                            </button>
+                            <button class="btn btn-secondary btn-sm">
+                                <i class="fas fa-comment"></i> Comment
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <!-- New Post Modal -->
+    <div class="modal" id="newPostModal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2>Create New Post</h2>
+                <span class="close" id="closeModal">&times;</span>
+            </div>
+            <form class="modal-body" id="newPostForm">
+                <div class="form-group">
+                    <label for="postTitle">Title</label>
+                    <input type="text" id="postTitle" name="title" required>
+                </div>
+                <div class="form-group">
+                    <label for="postCategory">Category</label>
+                    <select id="postCategory" name="category" required>
+                        <option value="">Select a category</option>
+                        <option value="general">General Discussion</option>
+                        <option value="announcement">Announcement</option>
+                        <option value="question">Question</option>
+                        <option value="event">Event</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label for="postContent">Content</label>
+                    <textarea id="postContent" name="content" rows="6" required></textarea>
+                </div>
+                <div class="form-group">
+                    <label for="postTags">Tags (optional)</label>
+                    <input type="text" id="postTags" name="tags" placeholder="Separate tags with commas">
+                </div>
+            </form>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" id="cancelPost">Cancel</button>
+                <button type="submit" class="btn btn-primary" form="newPostForm">Create Post</button>
+            </div>
+        </div>
+    </div>
+
+    <footer class="footer">
+        <div class="container">
+            <p>&copy; 2025 Community Platform. All rights reserved.</p>
+            <div class="footer-links">
+                <a href="terms.html">Terms of Service</a>
+                <a href="contact.html">Contact Us</a>
+            </div>
+        </div>
+    </footer>
+
+    <script src="script.js"></script>
+</body>
+</html>

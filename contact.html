@@ -1,0 +1,208 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Contact Us - Community Platform</title>
+    <link rel="stylesheet" href="styles.css">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+</head>
+<body>
+    <nav class="navbar">
+        <div class="nav-container">
+            <div class="nav-logo">
+                <a href="index.html">Community Platform</a>
+            </div>
+            <ul class="nav-menu">
+                <li class="nav-item">
+                    <a href="index.html" class="nav-link">Home</a>
+                </li>
+                <li class="nav-item">
+                    <a href="events.html" class="nav-link">Events</a>
+                </li>
+                <li class="nav-item">
+                    <a href="resources.html" class="nav-link">Resources</a>
+                </li>
+                <li class="nav-item">
+                    <a href="about.html" class="nav-link">About</a>
+                </li>
+                <li class="nav-item">
+                    <a href="contact.html" class="nav-link">Contact</a>
+                </li>
+                <li class="nav-item">
+                    <a href="terms.html" class="nav-link">Terms</a>
+                </li>
+            </ul>
+            <div class="nav-toggle" id="mobile-menu">
+                <span class="bar"></span>
+                <span class="bar"></span>
+                <span class="bar"></span>
+            </div>
+        </div>
+    </nav>
+
+    <main class="main-content">
+        <section class="page-header">
+            <div class="container">
+                <h1>Contact Us</h1>
+                <p>Get in touch with our team or find your local state board</p>
+            </div>
+        </section>
+
+        <section class="content-section">
+            <div class="container">
+                <div class="contact-grid">
+                    <div class="contact-info">
+                        <h2>Get in Touch</h2>
+                        <div class="contact-methods">
+                            <div class="contact-method">
+                                <div class="contact-icon">
+                                    <i class="fas fa-envelope"></i>
+                                </div>
+                                <div class="contact-details">
+                                    <h3>Email</h3>
+                                    <p>info@communityplatform.org</p>
+                                    <p>support@communityplatform.org</p>
+                                </div>
+                            </div>
+
+                            <div class="contact-method">
+                                <div class="contact-icon">
+                                    <i class="fas fa-phone"></i>
+                                </div>
+                                <div class="contact-details">
+                                    <h3>Phone</h3>
+                                    <p>Main: (555) 123-4567</p>
+                                    <p>Support: (555) 234-5678</p>
+                                </div>
+                            </div>
+
+                            <div class="contact-method">
+                                <div class="contact-icon">
+                                    <i class="fas fa-map-marker-alt"></i>
+                                </div>
+                                <div class="contact-details">
+                                    <h3>Address</h3>
+                                    <p>123 Community Street<br>
+                                    Civic Center, CC 12345</p>
+                                </div>
+                            </div>
+
+                            <div class="contact-method">
+                                <div class="contact-icon">
+                                    <i class="fas fa-clock"></i>
+                                </div>
+                                <div class="contact-details">
+                                    <h3>Office Hours</h3>
+                                    <p>Monday - Friday: 9:00 AM - 5:00 PM</p>
+                                    <p>Saturday: 10:00 AM - 2:00 PM</p>
+                                    <p>Sunday: Closed</p>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="social-links">
+                            <h3>Follow Us</h3>
+                            <div class="social-icons">
+                                <a href="#" class="social-link"><i class="fab fa-facebook"></i></a>
+                                <a href="#" class="social-link"><i class="fab fa-twitter"></i></a>
+                                <a href="#" class="social-link"><i class="fab fa-instagram"></i></a>
+                                <a href="#" class="social-link"><i class="fab fa-linkedin"></i></a>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="contact-form-section">
+                        <h2>Send Us a Message</h2>
+                        <form class="contact-form" id="contactForm">
+                            <div class="form-row">
+                                <div class="form-group">
+                                    <label for="firstName">First Name</label>
+                                    <input type="text" id="firstName" name="firstName" required>
+                                </div>
+                                <div class="form-group">
+                                    <label for="lastName">Last Name</label>
+                                    <input type="text" id="lastName" name="lastName" required>
+                                </div>
+                            </div>
+                            
+                            <div class="form-group">
+                                <label for="email">Email Address</label>
+                                <input type="email" id="email" name="email" required>
+                            </div>
+                            
+                            <div class="form-group">
+                                <label for="subject">Subject</label>
+                                <select id="subject" name="subject" required>
+                                    <option value="">Select a subject</option>
+                                    <option value="general">General Inquiry</option>
+                                    <option value="event">Event Information</option>
+                                    <option value="volunteer">Volunteer Opportunities</option>
+                                    <option value="partnership">Partnership</option>
+                                    <option value="technical">Technical Support</option>
+                                    <option value="feedback">Feedback</option>
+                                </select>
+                            </div>
+                            
+                            <div class="form-group">
+                                <label for="message">Message</label>
+                                <textarea id="message" name="message" rows="6" required></textarea>
+                            </div>
+                            
+                            <button type="submit" class="btn btn-primary">Send Message</button>
+                        </form>
+                    </div>
+                </div>
+
+                <div class="state-boards-section">
+                    <h2>State Boards Directory</h2>
+                    <p>Find contact information for state boards in your area</p>
+                    
+                    <div class="search-container">
+                        <div class="search-box">
+                            <input type="text" id="boardsSearch" placeholder="Search by state, board name, or contact info...">
+                            <i class="fas fa-search"></i>
+                        </div>
+                    </div>
+
+                    <div class="boards-list" id="boardsList">
+                        <!-- State boards will be dynamically loaded here -->
+                    </div>
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <footer class="footer">
+        <div class="container">
+            <p>&copy; 2025 Community Platform. All rights reserved.</p>
+            <div class="footer-links">
+                <a href="terms.html">Terms of Service</a>
+                <a href="contact.html">Contact Us</a>
+            </div>
+        </div>
+    </footer>
+
+    <script src="script.js"></script>
+    <script>
+        // Contact form handling
+        document.getElementById('contactForm').addEventListener('submit', function(event) {
+            event.preventDefault();
+            
+            // Get form data
+            const formData = new FormData(this);
+            const firstName = formData.get('firstName');
+            const lastName = formData.get('lastName');
+            const email = formData.get('email');
+            const subject = formData.get('subject');
+            const message = formData.get('message');
+            
+            // Simulate form submission
+            showNotification(`Thank you, ${firstName}! Your message has been sent successfully. We'll get back to you soon.`, 'success');
+            
+            // Reset form
+            this.reset();
+        });
+    </script>
+</body>
+</html>
