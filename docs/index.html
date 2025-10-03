@@ -1,0 +1,639 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Digital Signage CMS - GitHub Pages</title>
+    <script src="https://unpkg.com/@supabase/supabase-js@2"></script>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            background-color: #f5f5f5;
+            color: #333;
+        }
+        
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+        
+        .header {
+            background: white;
+            padding: 1rem 2rem;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+            margin-bottom: 2rem;
+        }
+        
+        .header-content {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        
+        .logo {
+            font-size: 1.5rem;
+            font-weight: bold;
+            color: #2563eb;
+        }
+        
+        .nav {
+            display: flex;
+            gap: 1rem;
+            align-items: center;
+        }
+        
+        .nav a {
+            text-decoration: none;
+            color: #666;
+            padding: 0.5rem 1rem;
+            border-radius: 4px;
+            transition: background-color 0.2s;
+        }
+        
+        .nav a:hover {
+            background-color: #f0f0f0;
+        }
+        
+        .btn {
+            background-color: #2563eb;
+            color: white;
+            border: none;
+            padding: 0.75rem 1.5rem;
+            border-radius: 6px;
+            cursor: pointer;
+            text-decoration: none;
+            display: inline-block;
+            font-size: 0.9rem;
+            transition: background-color 0.2s;
+        }
+        
+        .btn:hover {
+            background-color: #1d4ed8;
+        }
+        
+        .btn-secondary {
+            background-color: #6b7280;
+        }
+        
+        .btn-secondary:hover {
+            background-color: #4b5563;
+        }
+        
+        .btn-danger {
+            background-color: #dc2626;
+        }
+        
+        .btn-danger:hover {
+            background-color: #b91c1c;
+        }
+        
+        .card {
+            background: white;
+            border-radius: 8px;
+            padding: 1.5rem;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+            margin-bottom: 1rem;
+        }
+        
+        .form-group {
+            margin-bottom: 1rem;
+        }
+        
+        .form-group label {
+            display: block;
+            margin-bottom: 0.5rem;
+            font-weight: 500;
+        }
+        
+        .form-group input,
+        .form-group select,
+        .form-group textarea {
+            width: 100%;
+            padding: 0.75rem;
+            border: 1px solid #d1d5db;
+            border-radius: 6px;
+            font-size: 1rem;
+        }
+        
+        .form-group input:focus,
+        .form-group select:focus,
+        .form-group textarea:focus {
+            outline: none;
+            border-color: #2563eb;
+            box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.1);
+        }
+        
+        .alert {
+            padding: 1rem;
+            border-radius: 6px;
+            margin-bottom: 1rem;
+        }
+        
+        .alert-error {
+            background-color: #fef2f2;
+            border: 1px solid #fecaca;
+            color: #dc2626;
+        }
+        
+        .alert-success {
+            background-color: #f0fdf4;
+            border: 1px solid #bbf7d0;
+            color: #16a34a;
+        }
+        
+        .alert-info {
+            background-color: #eff6ff;
+            border: 1px solid #bfdbfe;
+            color: #1d4ed8;
+        }
+        
+        .table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 1rem;
+        }
+        
+        .table th,
+        .table td {
+            padding: 0.75rem;
+            text-align: left;
+            border-bottom: 1px solid #e5e7eb;
+        }
+        
+        .table th {
+            background-color: #f9fafb;
+            font-weight: 600;
+        }
+        
+        .status {
+            padding: 0.25rem 0.75rem;
+            border-radius: 9999px;
+            font-size: 0.75rem;
+            font-weight: 500;
+        }
+        
+        .status-pending {
+            background-color: #fef3c7;
+            color: #92400e;
+        }
+        
+        .status-active {
+            background-color: #d1fae5;
+            color: #065f46;
+        }
+        
+        .status-offline {
+            background-color: #fee2e2;
+            color: #991b1b;
+        }
+        
+        .hidden {
+            display: none !important;
+        }
+        
+        .loading {
+            text-align: center;
+            padding: 2rem;
+        }
+        
+        .spinner {
+            border: 3px solid #f3f3f3;
+            border-top: 3px solid #2563eb;
+            border-radius: 50%;
+            width: 30px;
+            height: 30px;
+            animation: spin 1s linear infinite;
+            margin: 0 auto 1rem;
+        }
+        
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+        
+        .config-section {
+            background: #f8fafc;
+            border: 1px solid #e2e8f0;
+            border-radius: 8px;
+            padding: 1.5rem;
+            margin-bottom: 2rem;
+        }
+        
+        .config-section h3 {
+            color: #1e293b;
+            margin-bottom: 1rem;
+        }
+        
+        .config-section p {
+            color: #64748b;
+            margin-bottom: 1rem;
+        }
+        
+        .code-block {
+            background: #1e293b;
+            color: #e2e8f0;
+            padding: 1rem;
+            border-radius: 6px;
+            font-family: 'Courier New', monospace;
+            font-size: 0.9rem;
+            overflow-x: auto;
+            margin: 1rem 0;
+        }
+        
+        .download-section {
+            background: #f0f9ff;
+            border: 1px solid #0ea5e9;
+            border-radius: 8px;
+            padding: 1.5rem;
+            margin-bottom: 2rem;
+        }
+        
+        .download-section h3 {
+            color: #0c4a6e;
+            margin-bottom: 1rem;
+        }
+        
+        .download-section p {
+            color: #0369a1;
+            margin-bottom: 1rem;
+        }
+    </style>
+</head>
+<body>
+    <header class="header">
+        <div class="header-content">
+            <div class="logo">🎬 Digital Signage System</div>
+            <nav class="nav">
+                <a href="#setup">Setup</a>
+                <a href="#cms">CMS Demo</a>
+                <a href="#player">Player</a>
+                <a href="#docs">Documentation</a>
+            </nav>
+        </div>
+    </header>
+    
+    <div class="container">
+        <div class="alert alert-info">
+            <strong>🚀 Live Demo Available!</strong> This is a static version of the Digital Signage CMS running on GitHub Pages. 
+            For full functionality, you'll need to set up your own Supabase backend.
+        </div>
+        
+        <div class="card">
+            <h1>Digital Signage System</h1>
+            <p>A robust, real-time digital signage system with web-based CMS and desktop player.</p>
+            
+            <div class="download-section">
+                <h3>📥 Download Desktop Player</h3>
+                <p>Download the Electron-based desktop player for your display devices:</p>
+                <a href="https://github.com/yourusername/digital-signage-system/releases" class="btn" target="_blank">
+                    Download Player
+                </a>
+            </div>
+        </div>
+        
+        <div class="config-section" id="setup">
+            <h3>⚙️ Quick Setup</h3>
+            <p>To use this system, you need to set up your own Supabase backend:</p>
+            
+            <div class="code-block">
+# 1. Create a Supabase project
+# 2. Run the SQL commands from supabase-setup.json
+# 3. Create a storage bucket named 'content'
+# 4. Update the configuration below with your Supabase credentials
+            </div>
+            
+            <div class="form-group">
+                <label for="supabaseUrl">Supabase Project URL</label>
+                <input type="text" id="supabaseUrl" placeholder="https://your-project.supabase.co">
+            </div>
+            
+            <div class="form-group">
+                <label for="supabaseKey">Supabase Anon Key</label>
+                <input type="text" id="supabaseKey" placeholder="your-anon-key">
+            </div>
+            
+            <button class="btn" onclick="initializeSupabase()">Initialize Connection</button>
+        </div>
+        
+        <div class="card" id="cms">
+            <h3>📊 CMS Dashboard</h3>
+            <p>Manage your digital signage devices and content.</p>
+            
+            <div id="authSection">
+                <div class="form-group">
+                    <label for="email">Email</label>
+                    <input type="email" id="email" placeholder="your@email.com">
+                </div>
+                
+                <div class="form-group">
+                    <label for="password">Password</label>
+                    <input type="password" id="password" placeholder="Your password">
+                </div>
+                
+                <button class="btn" onclick="signIn()">Sign In</button>
+                <button class="btn btn-secondary" onclick="signUp()">Sign Up</button>
+            </div>
+            
+            <div id="dashboardSection" class="hidden">
+                <h4>Connected Devices</h4>
+                <div id="devicesList">
+                    <div class="loading">
+                        <div class="spinner"></div>
+                        <p>Loading devices...</p>
+                    </div>
+                </div>
+                
+                <div class="form-group">
+                    <label for="deviceName">Device Name</label>
+                    <input type="text" id="deviceName" placeholder="e.g., Main Display">
+                </div>
+                
+                <button class="btn" onclick="generateDeviceCode()">Generate New Device Code</button>
+                
+                <div id="generatedCode" class="hidden">
+                    <h4>Generated Device Code</h4>
+                    <p><strong>Code:</strong> <span id="codeValue"></span></p>
+                    <p><strong>Status:</strong> <span id="codeStatus" class="status status-pending">Pending</span></p>
+                </div>
+            </div>
+        </div>
+        
+        <div class="card" id="player">
+            <h3>🖥️ Desktop Player</h3>
+            <p>The desktop player is an Electron application that runs on your display devices.</p>
+            
+            <h4>Features:</h4>
+            <ul>
+                <li>Real-time content synchronization</li>
+                <li>Automatic playlist playback</li>
+                <li>Support for images and videos</li>
+                <li>Force stop functionality</li>
+                <li>Connection status monitoring</li>
+            </ul>
+            
+            <h4>Installation:</h4>
+            <ol>
+                <li>Download the player from the releases page</li>
+                <li>Install on your display device</li>
+                <li>Enter the device code generated from the CMS</li>
+                <li>The player will automatically connect and start displaying content</li>
+            </ol>
+        </div>
+        
+        <div class="card" id="docs">
+            <h3>📚 Documentation</h3>
+            <p>Complete setup and usage instructions are available in the repository.</p>
+            
+            <h4>Repository Structure:</h4>
+            <div class="code-block">
+digital-signage-system/
+├── supabase-setup.json          # Database setup
+├── server.js                    # Express server (full CMS)
+├── views/                       # EJS templates
+├── player/                      # Electron desktop client
+│   ├── main.js
+│   ├── index.html
+│   └── renderer.js
+└── docs/                        # GitHub Pages (this page)
+            </div>
+            
+            <h4>Quick Start:</h4>
+            <ol>
+                <li>Clone the repository</li>
+                <li>Set up Supabase backend</li>
+                <li>Run the Express server for full CMS functionality</li>
+                <li>Build and distribute the Electron player</li>
+            </ol>
+            
+            <a href="https://github.com/yourusername/digital-signage-system" class="btn" target="_blank">
+                View on GitHub
+            </a>
+        </div>
+    </div>
+    
+    <script>
+        let supabase = null;
+        let currentUser = null;
+        
+        function initializeSupabase() {
+            const url = document.getElementById('supabaseUrl').value;
+            const key = document.getElementById('supabaseKey').value;
+            
+            if (!url || !key) {
+                alert('Please enter both Supabase URL and Anon Key');
+                return;
+            }
+            
+            try {
+                supabase = window.supabase.createClient(url, key);
+                showAlert('Supabase connection initialized!', 'success');
+            } catch (error) {
+                showAlert('Failed to initialize Supabase: ' + error.message, 'error');
+            }
+        }
+        
+        async function signIn() {
+            if (!supabase) {
+                alert('Please initialize Supabase connection first');
+                return;
+            }
+            
+            const email = document.getElementById('email').value;
+            const password = document.getElementById('password').value;
+            
+            if (!email || !password) {
+                alert('Please enter email and password');
+                return;
+            }
+            
+            try {
+                const { data, error } = await supabase.auth.signInWithPassword({
+                    email,
+                    password
+                });
+                
+                if (error) {
+                    showAlert('Sign in failed: ' + error.message, 'error');
+                    return;
+                }
+                
+                currentUser = data.user;
+                showAlert('Signed in successfully!', 'success');
+                showDashboard();
+            } catch (error) {
+                showAlert('Sign in error: ' + error.message, 'error');
+            }
+        }
+        
+        async function signUp() {
+            if (!supabase) {
+                alert('Please initialize Supabase connection first');
+                return;
+            }
+            
+            const email = document.getElementById('email').value;
+            const password = document.getElementById('password').value;
+            
+            if (!email || !password) {
+                alert('Please enter email and password');
+                return;
+            }
+            
+            try {
+                const { data, error } = await supabase.auth.signUp({
+                    email,
+                    password
+                });
+                
+                if (error) {
+                    showAlert('Sign up failed: ' + error.message, 'error');
+                    return;
+                }
+                
+                showAlert('Account created! Please check your email to confirm.', 'success');
+            } catch (error) {
+                showAlert('Sign up error: ' + error.message, 'error');
+            }
+        }
+        
+        function showDashboard() {
+            document.getElementById('authSection').classList.add('hidden');
+            document.getElementById('dashboardSection').classList.remove('hidden');
+            loadDevices();
+        }
+        
+        async function loadDevices() {
+            if (!supabase || !currentUser) return;
+            
+            try {
+                const { data: devices, error } = await supabase
+                    .from('devices')
+                    .select('*')
+                    .eq('owner_id', currentUser.id)
+                    .order('created_at', { ascending: false });
+                
+                if (error) {
+                    console.error('Error loading devices:', error);
+                    return;
+                }
+                
+                displayDevices(devices || []);
+            } catch (error) {
+                console.error('Error loading devices:', error);
+            }
+        }
+        
+        function displayDevices(devices) {
+            const devicesList = document.getElementById('devicesList');
+            
+            if (devices.length === 0) {
+                devicesList.innerHTML = '<p>No devices connected yet. Generate a code to get started!</p>';
+                return;
+            }
+            
+            const table = document.createElement('table');
+            table.className = 'table';
+            
+            table.innerHTML = `
+                <thead>
+                    <tr>
+                        <th>Device Name</th>
+                        <th>Code</th>
+                        <th>Status</th>
+                        <th>Last Seen</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    ${devices.map(device => `
+                        <tr>
+                            <td>${device.device_name}</td>
+                            <td><code>${device.unique_code}</code></td>
+                            <td>
+                                <span class="status status-${device.status}">
+                                    ${device.status.charAt(0).toUpperCase() + device.status.slice(1)}
+                                </span>
+                            </td>
+                            <td>${new Date(device.last_seen).toLocaleString()}</td>
+                        </tr>
+                    `).join('')}
+                </tbody>
+            `;
+            
+            devicesList.innerHTML = '';
+            devicesList.appendChild(table);
+        }
+        
+        async function generateDeviceCode() {
+            if (!supabase || !currentUser) {
+                alert('Please sign in first');
+                return;
+            }
+            
+            const deviceName = document.getElementById('deviceName').value || `Device ${Date.now()}`;
+            const uniqueCode = generateUniqueCode();
+            
+            try {
+                const { data, error } = await supabase
+                    .from('devices')
+                    .insert({
+                        owner_id: currentUser.id,
+                        unique_code: uniqueCode,
+                        device_name: deviceName,
+                        status: 'pending'
+                    })
+                    .select()
+                    .single();
+                
+                if (error) {
+                    showAlert('Failed to generate code: ' + error.message, 'error');
+                    return;
+                }
+                
+                document.getElementById('codeValue').textContent = uniqueCode;
+                document.getElementById('generatedCode').classList.remove('hidden');
+                showAlert('Device code generated successfully!', 'success');
+                
+                // Reload devices list
+                loadDevices();
+            } catch (error) {
+                showAlert('Error generating code: ' + error.message, 'error');
+            }
+        }
+        
+        function generateUniqueCode() {
+            const chars = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789';
+            let result = '';
+            for (let i = 0; i < 6; i++) {
+                result += chars.charAt(Math.floor(Math.random() * chars.length));
+            }
+            return result;
+        }
+        
+        function showAlert(message, type) {
+            const alertDiv = document.createElement('div');
+            alertDiv.className = `alert alert-${type}`;
+            alertDiv.textContent = message;
+            
+            const container = document.querySelector('.container');
+            container.insertBefore(alertDiv, container.firstChild);
+            
+            setTimeout(() => {
+                alertDiv.remove();
+            }, 5000);
+        }
+        
+        // Initialize with demo data if no Supabase connection
+        document.addEventListener('DOMContentLoaded', function() {
+            // Show demo message
+            showAlert('This is a demo version. Set up your Supabase backend for full functionality.', 'info');
+        });
+    </script>
+</body>
+</html>

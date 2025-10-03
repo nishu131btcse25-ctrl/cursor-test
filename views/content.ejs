@@ -1,0 +1,122 @@
+<%- include('layout', { title: 'Content Management - Digital Signage CMS', body: `
+<div>
+    <h1>Content Management</h1>
+    <p>Upload and manage your digital signage content.</p>
+    
+    <div class="card">
+        <h3>Upload New Content</h3>
+        <form id="uploadForm" enctype="multipart/form-data">
+            <div class="form-group">
+                <label for="file">Select File</label>
+                <input type="file" id="file" name="file" accept="image/*,video/*" required>
+                <small>Supported formats: Images (JPEG, PNG, GIF), Videos (MP4, WebM, AVI). Max size: 50MB</small>
+            </div>
+            <button type="submit" class="btn">Upload Content</button>
+        </form>
+        
+        <div class="loading" id="uploadLoading">
+            <div class="spinner"></div>
+            <p>Uploading...</p>
+        </div>
+    </div>
+    
+    <div class="card">
+        <h3>Your Content Library</h3>
+        
+        <div class="loading" id="contentLoading">
+            <div class="spinner"></div>
+            <p>Loading content...</p>
+        </div>
+        
+        <div id="contentList">
+            <% if (content && content.length > 0) { %>
+                <table class="table">
+                    <thead>
+                        <tr>
+                            <th>Preview</th>
+                            <th>File Name</th>
+                            <th>Type</th>
+                            <th>Size</th>
+                            <th>Uploaded</th>
+                            <th>Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <% content.forEach(item => { %>
+                        <tr>
+                            <td>
+                                <% if (item.content_type === 'image') { %>
+                                    <img src="<%= item.file_url %>" alt="<%= item.file_name %>" style="width: 60px; height: 40px; object-fit: cover; border-radius: 4px;">
+                                <% } else { %>
+                                    <div style="width: 60px; height: 40px; background: #f0f0f0; border-radius: 4px; display: flex; align-items: center; justify-content: center;">
+                                        <span style="font-size: 0.8rem;">📹</span>
+                                    </div>
+                                <% } %>
+                            </td>
+                            <td><%= item.file_name %></td>
+                            <td>
+                                <span class="status status-<%= item.content_type === 'image' ? 'active' : 'pending' %>">
+                                    <%= item.content_type.charAt(0).toUpperCase() + item.content_type.slice(1) %>
+                                </span>
+                            </td>
+                            <td><%= item.file_size ? (item.file_size / 1024 / 1024).toFixed(2) + ' MB' : 'Unknown' %></td>
+                            <td><%= new Date(item.created_at).toLocaleDateString() %></td>
+                            <td>
+                                <a href="<%= item.file_url %>" target="_blank" class="btn btn-secondary">View</a>
+                            </td>
+                        </tr>
+                        <% }); %>
+                    </tbody>
+                </table>
+            <% } else { %>
+                <p>No content uploaded yet. Upload your first file to get started!</p>
+            <% } %>
+        </div>
+    </div>
+</div>
+
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    const uploadForm = document.getElementById('uploadForm');
+    const uploadLoading = document.getElementById('uploadLoading');
+    const contentLoading = document.getElementById('contentLoading');
+    
+    uploadForm.addEventListener('submit', async function(e) {
+        e.preventDefault();
+        
+        const formData = new FormData(uploadForm);
+        
+        showLoading('uploadLoading');
+        
+        try {
+            const response = await fetch('/upload-content', {
+                method: 'POST',
+                body: formData
+            });
+            
+            const result = await response.json();
+            
+            if (result.success) {
+                showAlert('Content uploaded successfully!', 'success');
+                uploadForm.reset();
+                
+                // Reload the page to show new content
+                setTimeout(() => {
+                    window.location.reload();
+                }, 1000);
+            } else {
+                showAlert(result.error || 'Failed to upload content');
+            }
+        } catch (error) {
+            console.error('Upload error:', error);
+            showAlert('An error occurred during upload');
+        } finally {
+            hideLoading('uploadLoading');
+        }
+    });
+    
+    // Hide loading on page load
+    hideLoading('contentLoading');
+});
+</script>
+` }) %>

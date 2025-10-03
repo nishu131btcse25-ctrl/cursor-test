@@ -1,0 +1,216 @@
+<%- include('layout', { title: 'Playlist Management - Digital Signage CMS', body: `
+<div>
+    <h1>Playlist Management</h1>
+    <% if (device) { %>
+        <p>Managing playlist for device: <strong><%= device.device_name %></strong> (Code: <code><%= device.unique_code %></code>)</p>
+    <% } %>
+    
+    <div class="card">
+        <h3>Add Content to Playlist</h3>
+        <form id="addToPlaylistForm">
+            <div class="form-group">
+                <label for="contentId">Select Content</label>
+                <select id="contentId" name="contentId" required>
+                    <option value="">Choose content...</option>
+                    <% if (content && content.length > 0) { %>
+                        <% content.forEach(item => { %>
+                        <option value="<%= item.content_id %>"><%= item.file_name %> (<%= item.content_type %>)</option>
+                        <% }); %>
+                    <% } %>
+                </select>
+            </div>
+            
+            <div class="form-group">
+                <label for="startTime">Start Time</label>
+                <input type="datetime-local" id="startTime" name="startTime" required>
+            </div>
+            
+            <div class="form-group">
+                <label for="endTime">End Time</label>
+                <input type="datetime-local" id="endTime" name="endTime" required>
+            </div>
+            
+            <div class="form-group">
+                <label for="orderIndex">Order (0 = first)</label>
+                <input type="number" id="orderIndex" name="orderIndex" value="0" min="0">
+            </div>
+            
+            <button type="submit" class="btn">Add to Playlist</button>
+        </form>
+        
+        <div class="loading" id="addLoading">
+            <div class="spinner"></div>
+            <p>Adding to playlist...</p>
+        </div>
+    </div>
+    
+    <div class="card">
+        <h3>Current Playlist</h3>
+        
+        <div style="margin-bottom: 1rem;">
+            <button id="forceStopBtn" class="btn btn-danger">Force Stop All Playback</button>
+        </div>
+        
+        <div class="loading" id="playlistLoading">
+            <div class="spinner"></div>
+            <p>Loading playlist...</p>
+        </div>
+        
+        <div id="playlistList">
+            <% if (playlists && playlists.length > 0) { %>
+                <table class="table">
+                    <thead>
+                        <tr>
+                            <th>Order</th>
+                            <th>Content</th>
+                            <th>Start Time</th>
+                            <th>End Time</th>
+                            <th>Status</th>
+                            <th>Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <% playlists.forEach(playlist => { %>
+                        <tr>
+                            <td><%= playlist.order_index %></td>
+                            <td>
+                                <% if (playlist.content) { %>
+                                    <div style="display: flex; align-items: center; gap: 0.5rem;">
+                                        <% if (playlist.content.content_type === 'image') { %>
+                                            <img src="<%= playlist.content.file_url %>" alt="<%= playlist.content.file_name %>" style="width: 40px; height: 30px; object-fit: cover; border-radius: 4px;">
+                                        <% } else { %>
+                                            <div style="width: 40px; height: 30px; background: #f0f0f0; border-radius: 4px; display: flex; align-items: center; justify-content: center;">
+                                                <span style="font-size: 0.7rem;">📹</span>
+                                            </div>
+                                        <% } %>
+                                        <span><%= playlist.content.file_name %></span>
+                                    </div>
+                                <% } else { %>
+                                    <span style="color: #999;">Content not found</span>
+                                <% } %>
+                            </td>
+                            <td><%= new Date(playlist.start_time).toLocaleString() %></td>
+                            <td><%= new Date(playlist.end_time).toLocaleString() %></td>
+                            <td>
+                                <span class="status status-<%= playlist.status %>">
+                                    <%= playlist.status.charAt(0).toUpperCase() + playlist.status.slice(1) %>
+                                </span>
+                            </td>
+                            <td>
+                                <button class="btn btn-danger" onclick="removeFromPlaylist('<%= playlist.playlist_id %>')">Remove</button>
+                            </td>
+                        </tr>
+                        <% }); %>
+                    </tbody>
+                </table>
+            <% } else { %>
+                <p>No content in playlist yet. Add content to get started!</p>
+            <% } %>
+        </div>
+    </div>
+</div>
+
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    const addForm = document.getElementById('addToPlaylistForm');
+    const addLoading = document.getElementById('addLoading');
+    const playlistLoading = document.getElementById('playlistLoading');
+    const forceStopBtn = document.getElementById('forceStopBtn');
+    
+    // Set default start time to now
+    const now = new Date();
+    const startTimeInput = document.getElementById('startTime');
+    const endTimeInput = document.getElementById('endTime');
+    
+    startTimeInput.value = now.toISOString().slice(0, 16);
+    
+    // Set default end time to 1 hour from now
+    const oneHourLater = new Date(now.getTime() + 60 * 60 * 1000);
+    endTimeInput.value = oneHourLater.toISOString().slice(0, 16);
+    
+    addForm.addEventListener('submit', async function(e) {
+        e.preventDefault();
+        
+        const formData = new FormData(addForm);
+        const data = {
+            contentId: formData.get('contentId'),
+            startTime: formData.get('startTime'),
+            endTime: formData.get('endTime'),
+            orderIndex: formData.get('orderIndex')
+        };
+        
+        showLoading('addLoading');
+        
+        try {
+            const response = await fetch('/playlist/<%= device.device_id %>/add', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify(data)
+            });
+            
+            const result = await response.json();
+            
+            if (result.success) {
+                showAlert('Content added to playlist successfully!', 'success');
+                addForm.reset();
+                
+                // Reload the page to show updated playlist
+                setTimeout(() => {
+                    window.location.reload();
+                }, 1000);
+            } else {
+                showAlert(result.error || 'Failed to add content to playlist');
+            }
+        } catch (error) {
+            console.error('Add to playlist error:', error);
+            showAlert('An error occurred while adding to playlist');
+        } finally {
+            hideLoading('addLoading');
+        }
+    });
+    
+    forceStopBtn.addEventListener('click', async function() {
+        if (!confirm('Are you sure you want to force stop all playback on this device?')) {
+            return;
+        }
+        
+        try {
+            const response = await fetch('/playlist/<%= device.device_id %>/force-stop', {
+                method: 'POST'
+            });
+            
+            const result = await response.json();
+            
+            if (result.success) {
+                showAlert('Force stop command sent successfully!', 'success');
+                
+                // Reload the page to show updated status
+                setTimeout(() => {
+                    window.location.reload();
+                }, 1000);
+            } else {
+                showAlert(result.error || 'Failed to send force stop command');
+            }
+        } catch (error) {
+            console.error('Force stop error:', error);
+            showAlert('An error occurred while sending force stop command');
+        }
+    });
+    
+    // Hide loading on page load
+    hideLoading('playlistLoading');
+});
+
+function removeFromPlaylist(playlistId) {
+    if (!confirm('Are you sure you want to remove this item from the playlist?')) {
+        return;
+    }
+    
+    // This would typically make an API call to remove the item
+    // For now, we'll just show an alert
+    showAlert('Remove functionality would be implemented here');
+}
+</script>
+` }) %>

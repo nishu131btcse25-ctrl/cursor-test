@@ -1,0 +1,144 @@
+<%- include('layout', { title: 'Dashboard - Digital Signage CMS', body: `
+<div>
+    <h1>Dashboard</h1>
+    <p>Manage your digital signage devices and content.</p>
+    
+    <div class="card">
+        <h3>Connected Devices</h3>
+        
+        <div id="generateCodeForm" style="margin-bottom: 2rem;">
+            <h4>Generate New Device Code</h4>
+            <form id="generateForm">
+                <div class="form-group">
+                    <label for="deviceName">Device Name (optional)</label>
+                    <input type="text" id="deviceName" name="deviceName" placeholder="e.g., Main Display">
+                </div>
+                <button type="submit" class="btn">Generate New Code</button>
+            </form>
+        </div>
+        
+        <div id="generatedCode" style="display: none; background: #f0f9ff; padding: 1rem; border-radius: 6px; margin-bottom: 1rem;">
+            <h4>Generated Device Code</h4>
+            <p><strong>Code:</strong> <span id="codeValue"></span></p>
+            <p><strong>Status:</strong> <span id="codeStatus" class="status status-pending">Pending</span></p>
+            <p><em>Share this code with your display device to connect it.</em></p>
+        </div>
+        
+        <div class="loading" id="loading">
+            <div class="spinner"></div>
+            <p>Loading devices...</p>
+        </div>
+        
+        <div id="devicesList">
+            <% if (devices && devices.length > 0) { %>
+                <table class="table">
+                    <thead>
+                        <tr>
+                            <th>Device Name</th>
+                            <th>Code</th>
+                            <th>Status</th>
+                            <th>Last Seen</th>
+                            <th>Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <% devices.forEach(device => { %>
+                        <tr>
+                            <td><%= device.device_name %></td>
+                            <td><code><%= device.unique_code %></code></td>
+                            <td>
+                                <span class="status status-<%= device.status %>">
+                                    <%= device.status.charAt(0).toUpperCase() + device.status.slice(1) %>
+                                </span>
+                            </td>
+                            <td><%= new Date(device.last_seen).toLocaleString() %></td>
+                            <td>
+                                <a href="/playlist/<%= device.device_id %>" class="btn btn-secondary">Manage Playlist</a>
+                            </td>
+                        </tr>
+                        <% }); %>
+                    </tbody>
+                </table>
+            <% } else { %>
+                <p>No devices connected yet. Generate a code to get started!</p>
+            <% } %>
+        </div>
+    </div>
+</div>
+
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    const generateForm = document.getElementById('generateForm');
+    const generatedCodeDiv = document.getElementById('generatedCode');
+    const codeValueSpan = document.getElementById('codeValue');
+    const codeStatusSpan = document.getElementById('codeStatus');
+    const loadingDiv = document.getElementById('loading');
+    
+    generateForm.addEventListener('submit', async function(e) {
+        e.preventDefault();
+        
+        const formData = new FormData(generateForm);
+        const deviceName = formData.get('deviceName');
+        
+        showLoading('loading');
+        
+        try {
+            const response = await fetch('/generate-code', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({ deviceName })
+            });
+            
+            const result = await response.json();
+            
+            if (result.success) {
+                codeValueSpan.textContent = result.device.unique_code;
+                generatedCodeDiv.style.display = 'block';
+                generateForm.reset();
+                
+                // Listen for device status changes
+                listenForDeviceActivation(result.device.device_id);
+                
+                showAlert('Device code generated successfully!', 'success');
+            } else {
+                showAlert(result.error || 'Failed to generate code');
+            }
+        } catch (error) {
+            console.error('Error:', error);
+            showAlert('An error occurred while generating the code');
+        } finally {
+            hideLoading('loading');
+        }
+    });
+    
+    function listenForDeviceActivation(deviceId) {
+        // This would typically use Supabase Realtime
+        // For now, we'll simulate with polling
+        const checkStatus = setInterval(async () => {
+            try {
+                const response = await fetch('/dashboard');
+                const html = await response.text();
+                
+                // Parse the response to check if device status changed
+                // In a real implementation, you'd use Supabase Realtime
+                if (html.includes('status-active')) {
+                    codeStatusSpan.textContent = 'Active';
+                    codeStatusSpan.className = 'status status-active';
+                    clearInterval(checkStatus);
+                    showAlert('Device connected successfully!', 'success');
+                }
+            } catch (error) {
+                console.error('Status check error:', error);
+            }
+        }, 2000);
+        
+        // Stop checking after 5 minutes
+        setTimeout(() => {
+            clearInterval(checkStatus);
+        }, 300000);
+    }
+});
+</script>
+` }) %>

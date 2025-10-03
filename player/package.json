@@ -1,0 +1,46 @@
+{
+  "name": "digital-signage-player",
+  "version": "1.0.0",
+  "description": "Digital Signage Desktop Player",
+  "main": "main.js",
+  "scripts": {
+    "start": "electron .",
+    "dev": "electron . --dev",
+    "build": "electron-builder",
+    "dist": "electron-builder --publish=never"
+  },
+  "dependencies": {
+    "@supabase/supabase-js": "^2.38.4",
+    "electron": "^27.1.3"
+  },
+  "devDependencies": {
+    "electron-builder": "^24.6.4"
+  },
+  "build": {
+    "appId": "com.digitalsignage.player",
+    "productName": "Digital Signage Player",
+    "directories": {
+      "output": "dist"
+    },
+    "files": [
+      "**/*",
+      "!node_modules/**/*",
+      "!dist/**/*"
+    ],
+    "win": {
+      "target": "nsis",
+      "icon": "assets/icon.ico"
+    },
+    "mac": {
+      "target": "dmg",
+      "icon": "assets/icon.icns"
+    },
+    "linux": {
+      "target": "AppImage",
+      "icon": "assets/icon.png"
+    }
+  },
+  "keywords": ["digital-signage", "electron", "player", "supabase"],
+  "author": "Digital Signage Team",
+  "license": "MIT"
+}
