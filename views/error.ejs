@@ -1,0 +1,9 @@
+<%- include('layout', { title: 'Error - Digital Signage CMS', body: `
+<div style="text-align: center; margin: 4rem auto; max-width: 500px;">
+    <div class="card">
+        <h2 style="color: #dc2626; margin-bottom: 1rem;">⚠️ Error</h2>
+        <p style="margin-bottom: 2rem;"><%= message || 'An unexpected error occurred' %></p>
+        <a href="/dashboard" class="btn">Return to Dashboard</a>
+    </div>
+</div>
+` }) %>
