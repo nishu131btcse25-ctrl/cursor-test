@@ -1,6 +1,15 @@
-# Digital Signage System
+# 🎬 Digital Signage System
+
+[![Deploy to GitHub Pages](https://github.com/yourusername/digital-signage-system/workflows/Deploy%20to%20GitHub%20Pages/badge.svg)](https://github.com/yourusername/digital-signage-system/actions)
+[![Live Demo](https://img.shields.io/badge/Live%20Demo-GitHub%20Pages-blue)](https://yourusername.github.io/digital-signage-system/)
 
 A robust, real-time digital signage system consisting of a web-based Content Management System (CMS) for ad owners and a desktop client (Player) that runs on displays. Supabase serves as the backend, handling authentication, database management, and real-time data synchronization.
+
+## 🚀 Live Demo
+
+**Try the system online:** [https://yourusername.github.io/digital-signage-system/](https://yourusername.github.io/digital-signage-system/)
+
+*Note: The live demo requires you to set up your own Supabase backend for full functionality.*
 
 ## System Architecture
 
