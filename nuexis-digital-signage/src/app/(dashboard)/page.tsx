@@ -1,15 +1,20 @@
 'use client';
 
 import React from 'react';
+import { useScreens } from '@/lib/screen-context';
 import { Card, CardContent, CardHeader } from '@/components/ui/card';
 import Link from 'next/link';
 import { Button } from '@/components/ui/button';
 
 export default function DashboardPage() {
+  const { screens } = useScreens();
+  
+  const onlineScreens = screens.filter(screen => screen.is_online).length;
+  
   const stats = [
     {
       title: 'Total Screens',
-      value: '0',
+      value: screens.length.toString(),
       description: 'Active displays',
       icon: '📺',
       href: '/dashboard/screens',
@@ -30,7 +35,7 @@ export default function DashboardPage() {
     },
     {
       title: 'Online Now',
-      value: '0',
+      value: onlineScreens.toString(),
       description: 'Connected screens',
       icon: '🟢',
       href: '/dashboard/screens',

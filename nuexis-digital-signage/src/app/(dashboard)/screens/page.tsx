@@ -1,20 +1,21 @@
 'use client';
 
-import React, { useState, useEffect } from 'react';
-import { useAuth } from '@/lib/auth-context';
+import React, { useState } from 'react';
+import { useScreens } from '@/lib/screen-context';
 import { supabase } from '@/lib/supabase';
 import { Card, CardContent, CardHeader } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Modal } from '@/components/ui/modal';
 import { Input } from '@/components/ui/input';
-import { Screen } from '@/types';
 import { generateScreenId, formatRelativeTime } from '@/lib/utils';
+import { ScreenStatus } from '@/components/shared/screen-status';
+import { SkeletonCard } from '@/components/ui/skeleton';
+import { useToast } from '@/components/ui/toast';
 import Link from 'next/link';
 
 export default function ScreensPage() {
-  const { user } = useAuth();
-  const [screens, setScreens] = useState<Screen[]>([]);
-  const [loading, setLoading] = useState(true);
+  const { screens, loading, error: contextError, addScreen } = useScreens();
+  const { addToast } = useToast();
   const [showAddModal, setShowAddModal] = useState(false);
   const [newScreen, setNewScreen] = useState({
     name: '',
@@ -24,37 +25,8 @@ export default function ScreensPage() {
   const [submitting, setSubmitting] = useState(false);
   const [error, setError] = useState('');
 
-  useEffect(() => {
-    if (user) {
-      loadScreens();
-    }
-  }, [user]);
-
-  const loadScreens = async () => {
-    try {
-      setLoading(true);
-      const { data, error } = await supabase
-        .from('screens')
-        .select('*')
-        .eq('user_id', user!.id)
-        .order('created_at', { ascending: false });
-
-      if (error) {
-        throw error;
-      }
-
-      setScreens(data || []);
-    } catch (error) {
-      console.error('Error loading screens:', error);
-      setError('Failed to load screens');
-    } finally {
-      setLoading(false);
-    }
-  };
-
   const handleAddScreen = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (!user) return;
 
     try {
       setSubmitting(true);
@@ -64,7 +36,6 @@ export default function ScreensPage() {
       const { data, error } = await supabase
         .from('screens')
         .insert({
-          user_id: user.id,
           name: newScreen.name,
           screen_id: screenId,
           description: newScreen.description || null,
@@ -77,12 +48,22 @@ export default function ScreensPage() {
         throw error;
       }
 
-      setScreens([data, ...screens]);
+      addScreen(data);
       setNewScreen({ name: '', description: '', location: '' });
       setShowAddModal(false);
+      addToast({
+        type: 'success',
+        title: 'Screen Created',
+        description: `${data.name} has been added successfully`,
+      });
     } catch (error) {
       console.error('Error adding screen:', error);
       setError('Failed to add screen');
+      addToast({
+        type: 'error',
+        title: 'Error',
+        description: 'Failed to create screen. Please try again.',
+      });
     } finally {
       setSubmitting(false);
     }
@@ -101,10 +82,19 @@ export default function ScreensPage() {
         throw error;
       }
 
-      setScreens(screens.filter(screen => screen.id !== screenId));
+      addToast({
+        type: 'success',
+        title: 'Screen Deleted',
+        description: 'Screen has been removed successfully',
+      });
     } catch (error) {
       console.error('Error deleting screen:', error);
       setError('Failed to delete screen');
+      addToast({
+        type: 'error',
+        title: 'Error',
+        description: 'Failed to delete screen. Please try again.',
+      });
     }
   };
 
@@ -122,13 +112,7 @@ export default function ScreensPage() {
         
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
           {[1, 2, 3].map((i) => (
-            <Card key={i} className="animate-pulse">
-              <CardContent className="p-6">
-                <div className="h-4 bg-neutral-border-light rounded mb-2"></div>
-                <div className="h-3 bg-neutral-border-light rounded w-2/3 mb-4"></div>
-                <div className="h-3 bg-neutral-border-light rounded w-1/2"></div>
-              </CardContent>
-            </Card>
+            <SkeletonCard key={i} />
           ))}
         </div>
       </div>
@@ -151,9 +135,9 @@ export default function ScreensPage() {
       </div>
 
       {/* Error Message */}
-      {error && (
+      {(error || contextError) && (
         <div className="p-4 bg-semantic-error-light border border-semantic-error rounded-lg">
-          <p className="text-sm text-semantic-error">{error}</p>
+          <p className="text-sm text-semantic-error">{error || contextError}</p>
         </div>
       )}
 
@@ -187,16 +171,7 @@ export default function ScreensPage() {
                       ID: {screen.screen_id}
                     </p>
                   </div>
-                  <div className="flex items-center space-x-2">
-                    <div
-                      className={`w-2 h-2 rounded-full ${
-                        screen.is_online ? 'bg-semantic-success' : 'bg-neutral-text-subtle'
-                      }`}
-                    />
-                    <span className="text-xs text-neutral-text-muted">
-                      {screen.is_online ? 'Online' : 'Offline'}
-                    </span>
-                  </div>
+                  <ScreenStatus screen={screen} size="sm" showLastSeen={false} />
                 </div>
 
                 {screen.description && (

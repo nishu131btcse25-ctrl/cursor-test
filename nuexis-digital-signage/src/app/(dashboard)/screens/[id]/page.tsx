@@ -8,6 +8,7 @@ import { Card, CardContent, CardHeader } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Screen } from '@/types';
 import { formatDate, formatRelativeTime } from '@/lib/utils';
+import { ScreenSessions } from '@/components/shared/screen-sessions';
 import Link from 'next/link';
 
 export default function ScreenDetailPage() {
@@ -252,6 +253,9 @@ export default function ScreenDetailPage() {
           </div>
         </CardContent>
       </Card>
+
+      {/* Device Sessions */}
+      <ScreenSessions screenId={screen.id} />
     </div>
   );
 }
